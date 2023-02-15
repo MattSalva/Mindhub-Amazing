@@ -1,0 +1,62 @@
+/* Generales */
+body {
+    margin: 0;
+    max-width: 100%;
+    font-family: 'Montserrat', sans-serif;
+    padding-bottom: 5rem;
+}
+
+footer {
+    background-color: #3e4551;
+}
+#logo {
+    max-width: 60%;
+}
+
+/* Home, Upcoming, Past*/
+.card {
+    width: 100%;
+    margin: 1rem;
+}
+
+.card-body {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-around;
+}
+
+.card-img-top {
+    height: 15rem;
+}
+
+.card-text {
+    color: rgba(33, 37, 41, 0.75);
+}
+
+@media only screen and (max-width: 800px) {
+    .card {
+        margin-top: 3rem;
+        margin-bottom: 3rem;
+        max-width: 100%;
+    }
+    .row {
+        margin-left: 0rem!important;
+        margin-right: 0rem!important;
+    }
+    .navbar-collapse .container{
+        padding: 0rem;
+        margin-top: 1rem;
+    }
+    #logo {
+        max-width: 100%;
+    }
+}
+
+#main-detail {
+    margin:auto!important;
+    margin-top: 5rem!important;
+}
+
+#main-detail .img-detail {
+    box-shadow: -20px 0px 5px 5px rgb(0, 0, 0, 0.2);
+}
