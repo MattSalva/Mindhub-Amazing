@@ -13,6 +13,8 @@ imgEvento.setAttribute('class',`img-fluid`)
 
 imgElement.appendChild(imgEvento)
 
+const title = document.querySelector('title')
+title.innerText = `Details - ${evento.name}`
 const detailsElement = document.getElementById('detalles-evento')
 detailsElement.innerHTML = `
 <h1>${evento.name}</h1>
