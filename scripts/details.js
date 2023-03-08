@@ -9,6 +9,7 @@ const evento = eventos.find(e => e._id === parseInt(params.get('id')))
 const imgElement = document.getElementById('imagen-evento')
 const imgEvento = document.createElement('img')
 imgEvento.setAttribute('src',`${evento.image}`)
+imgEvento.setAttribute('class',`img-fluid`)
 
 imgElement.appendChild(imgEvento)
 
