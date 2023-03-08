@@ -2,6 +2,7 @@ const catElement = document.getElementById('search-filter')
 const dataElement = document.getElementById('eventos')
 const rawEventsData = data.events
 
+
 /*Agrega eventos en forma de card
 * dataNode: Nodo padre de los eventos
 * data: Array de eventos*/
@@ -24,7 +25,7 @@ function addCards(dataNode, data){
                                 <span class="fs-5">Price $${data[i].price}</span>
                             </div>
                             <div class="col">
-                                <a href="details.html/?id=${data[i]._id}" class="btn btn-secondary">Ver mas...</a>
+                                <a href="details.html?id=${data[i]._id}" class="btn btn-secondary">More...</a>
                             </div>
                         </div>
 
@@ -34,7 +35,6 @@ function addCards(dataNode, data){
         dataNode.appendChild(containerCart)
     }
 }
-
 /*
 * Listar categorias dinamicamente a partir de los eventos disponibles
 * catNode: Nodo parent de las categorias
@@ -48,13 +48,41 @@ function listCategories(catNode, data){
     for (let i = 0; i < categories.length; i++){
         let category = categories[i].replace(" ","-").toLowerCase()
         containerCats = document.createElement('div')
+        containerCats.setAttribute('class', 'checkbox')
         containerCats.innerHTML = `
-                    <input type="checkbox" name="category" id="${category}" value="${category}">
+                    <input type="checkbox" name="category" id="${category}" value="${category}" onclick="filterByCats()">
                     <label for="${category}">${categories[i]}</label>`
 
         catNode.insertBefore(containerCats, formNode)
     }
 }
+
+/*Provee un texto en caso de que la busqueda no de resultados*/
+function noResults(){
+    const emptyEventsNode = document.getElementById('eventos')
+    let msgContainer = document.createElement('div')
+    msgContainer.setAttribute('class', 'text-center m-5 p-5')
+    msgContainer.innerHTML = `<h3>No se encontraron eventos. Pruebe con diferentes filtros</h3>`
+    emptyEventsNode.appendChild(msgContainer)
+}
+
+/*Filtra en el momento
+* escucha al click y acciona el filtro por categorias*/
+
+function filterByCats(){
+    let checkboxes = catElement.querySelectorAll("input[type=checkbox]")
+    let filteredData = rawEventsData
+    let selectedCategories = [...checkboxes].reduce((acc, categoryCheckbox) => {if(categoryCheckbox.checked) acc.push(categoryCheckbox.id); return acc}, [])
+    if (selectedCategories){
+        filteredData = filteredData.filter(e => (selectedCategories.includes(normalizeCategory(e.category))))
+    }
+    if (selectedCategories.length === 0){
+        filteredData = rawEventsData
+    }
+    addCards(dataElement, filteredData)
+
+}
+
 /*Normaliza texto
 * text: string texto */
 
@@ -83,8 +111,10 @@ function filterEvents(rawEventsData){
             &&
             (normalizeText(e.name).includes(q) || normalizeText(e.description).includes(q))
         ))
-        if (filteredEventsData.length === 0)
-            alert("No se encontraron resultados")
+        if (filteredEventsData.length === 0) {
+            addCards(dataElement, filteredEventsData)
+            noResults()
+        }
         else
             addCards(dataElement, filteredEventsData)
     }
@@ -92,8 +122,10 @@ function filterEvents(rawEventsData){
         filteredEventsData = rawEventsData.filter(e => (
             catQuery.includes(normalizeCategory(e.category))))
 
-        if (filteredEventsData.length === 0)
-            alert("No se encontraron resultados")
+        if (filteredEventsData.length === 0) {
+            addCards(dataElement, filteredEventsData)
+            noResults()
+        }
         else
             addCards(dataElement, filteredEventsData)
     }
@@ -101,16 +133,15 @@ function filterEvents(rawEventsData){
         filteredEventsData = rawEventsData.filter(e => (
             normalizeText(e.name).includes(q) || normalizeText(e.description).includes(q)))
 
-        console.log(filteredEventsData)
 
-        if (filteredEventsData.length === 0)
-            alert("No se encontraron resultados")
+        if (filteredEventsData.length === 0) {
+            addCards(dataElement, filteredEventsData)
+            noResults()
+        }
          else
             addCards(dataElement, filteredEventsData)
 
     }
-
-
 }
 
 

@@ -43,15 +43,15 @@
     <div class="container-fluid bg-secondary">
         <div class="row">
             <div class="col m-4 fs-1 text-center">
-                <span class="text-white">HOME</span>
+                <span class="text-white">HOME</span>  <a href="upcoming_events.html" class="arrows-anchor"><i class="bi bi-caret-right-fill"></i></a>
             </div>
         </div>
     </div>
 </header>
 
 <main>
-    <div class="container-fluid  mt-3 ">
-        <form method="get" class="d-flex flex-column flex-md-row justify-content-around align-items-center" id="search-filter">
+    <div class="container-fluid  mt-3">
+        <form method="get" class="d-flex flex-column flex-md-row justify-content-around align-items-center" id="search-filter" autocomplete="off" >
             <!--   CATEGORIAS CARGADAS DINAMICAMENTE         -->
             <div class="d-flex" id="search-box">
                 <input class="form-control" type="search" placeholder="Search" aria-label="Search" name="q">
@@ -61,7 +61,7 @@
         </form>
     </div>
     <div class="container-fluid ">
-        <div class="row m-5 justify-content-center" id="eventos">
+        <div class="row m-5 justify-content-center gx-0" id="eventos">
             <!--   EVENTOS CARGADOS DINAMICAMENTE         -->
 
         </div>

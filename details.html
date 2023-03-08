@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="./css/style.css">
     <link rel="shortcut icon" href="assets/favicon.ico" type="image/x-icon">
     <title>Details</title>
 </head>
@@ -42,18 +42,14 @@
 
 <main>
     <div class="container border border-dark m-5" id="main-detail">
-        <div class="row ">
-            <div class="col border border-dark m-5 img-detail p-5">
-                <h1></h1>
+        <div class="row">
+            <div class="col border border-dark m-5 img-detail p-5" id="imagen-evento">
             </div>
-
-            <div class="col border border-dark m-5 text-center p-5">
-                <h2>Titulo</h2>
-                <p>Texto descriptivo</p>
-                <p>Texto descriptivo</p>
-                <p>Texto descriptivo</p>
+            <div class="col border border-dark m-5 text-center p-5" id="detalles-evento">
             </div>
+            <button class="btn btn-primary" onclick="history.back()">Go Back</button>
         </div>
+
     </div>
 
 
@@ -88,5 +84,6 @@
 
 <script src="data.js" type="text/javascript"></script>
 <script src="https://kit.fontawesome.com/5cf6d45787.js" crossorigin="anonymous"></script>
+<script src="./scripts/details.js" type="text/javascript"></script>
 </body>
 </html>

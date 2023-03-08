@@ -15,7 +15,7 @@ footer {
 
 /* Home, Upcoming, Past*/
 .card {
-    width: 100%;
+    max-width: 90%;
     margin: 1rem;
 }
 
@@ -26,12 +26,15 @@ footer {
 }
 
 .card-img-top {
-    height: 15rem;
+    height: 50%;
+    max-width: 100%;
+
 }
 
 .card-text {
     color: rgba(33, 37, 41, 0.75);
 }
+
 
 @media only screen and (max-width: 800px) {
     .card {
@@ -55,8 +58,45 @@ footer {
 #main-detail {
     margin:auto!important;
     margin-top: 5rem!important;
+    border-radius: 5px;
+    background-color: #d70367;
 }
 
 #main-detail .img-detail {
     box-shadow: -20px 0px 5px 5px rgb(0, 0, 0, 0.2);
+    padding: 0!important;
+    border-radius: 5px;
+}
+
+#imagen-evento img {
+
+    width: 100%;
+    height: 100%;
+}
+#detalles-evento {
+    border-radius: 5px;
+    background-color: #fde4e4;
+}
+
+
+
+.ctr {
+ text-align: start;
+ background-color: rgb(140, 140, 143);
+    border: 2px black dashed;
+}
+
+.ctr p {
+    margin-left: 1rem;
+    margin-top: 1rem;
+}
+.arrows-anchor{
+    transition: color 0.2s linear;
+}
+
+.arrows-anchor:link, .arrows-anchor:visited{
+    color: #3e4551;
+}
+.arrows-anchor:hover{
+    color: whitesmoke;
 }

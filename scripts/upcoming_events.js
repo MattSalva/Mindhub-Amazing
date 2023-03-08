@@ -29,7 +29,7 @@ function addCards(dataNode, data){
                                 <span class="fs-5">Price $${data[i].price}</span>
                             </div>
                             <div class="col">
-                                <a href="details.html/?id=${data[i]._id}" class="btn btn-secondary">Ver mas...</a>
+                                <a href="details.html?id=${data[i]._id}" class="btn btn-secondary">More...</a>
                             </div>
                         </div>
 
@@ -54,7 +54,7 @@ function listCategories(catNode, data){
         let category = categories[i].replace(" ","-").toLowerCase()
         containerCats = document.createElement('div')
         containerCats.innerHTML = `
-                    <input type="checkbox" name="category" id="${category}" value="${category}">
+                    <input type="checkbox" name="category" id="${category}" value="${category}" onclick="filterByCats()">
                     <label for="${category}">${categories[i]}</label>`
 
         catNode.insertBefore(containerCats, formNode)
@@ -62,6 +62,33 @@ function listCategories(catNode, data){
 }
 /*Normaliza texto
 * text: string texto */
+
+/*Provee un texto en caso de que la busqueda no de resultados*/
+function noResults(){
+    const emptyEventsNode = document.getElementById('eventos')
+    let msgContainer = document.createElement('div')
+    msgContainer.setAttribute('class', 'text-center m-5 p-5')
+    msgContainer.innerHTML = `<h3>No se encontraron eventos. Pruebe con diferentes filtros</h3>`
+    emptyEventsNode.appendChild(msgContainer)
+}
+
+/*Filtra en el momento
+* escucha al click y acciona el filtro por categorias*/
+
+
+function filterByCats(){
+    let checkboxes = catElement.querySelectorAll("input[type=checkbox]")
+    let filteredData = futureDates
+    let selectedCategories = [...checkboxes].reduce((acc, categoryCheckbox) => {if(categoryCheckbox.checked) acc.push(categoryCheckbox.id); return acc}, [])
+    if (selectedCategories){
+        filteredData = filteredData.filter(e => (selectedCategories.includes(normalizeCategory(e.category))))
+    }
+    if (selectedCategories.length === 0){
+        filteredData = futureDates
+    }
+    addCards(dataElement, filteredData)
+
+}
 
 function normalizeText(text){
     return text.trim().toLowerCase()
@@ -88,18 +115,36 @@ function filterEvents(rawEventsData){
             &&
             (normalizeText(e.name).includes(q) || normalizeText(e.description).includes(q))
         ))
-        addCards(dataElement, filteredEventsData)
+        if (filteredEventsData.length === 0) {
+            addCards(dataElement, filteredEventsData)
+            noResults()
+        }
+        else
+            addCards(dataElement, filteredEventsData)
     }
     else if (catQuery.length && !q.length){
         filteredEventsData = rawEventsData.filter(e => (
             catQuery.includes(normalizeCategory(e.category))))
 
-        addCards(dataElement, filteredEventsData)
+        if (filteredEventsData.length === 0) {
+            addCards(dataElement, filteredEventsData)
+            noResults()
+        }
+        else
+            addCards(dataElement, filteredEventsData)
     }
     else if (!catQuery.length && q.length){
         filteredEventsData = rawEventsData.filter(e => (
             normalizeText(e.name).includes(q) || normalizeText(e.description).includes(q)))
-        addCards(dataElement, filteredEventsData)
+
+
+        if (filteredEventsData.length === 0) {
+            addCards(dataElement, filteredEventsData)
+            noResults()
+        }
+        else
+            addCards(dataElement, filteredEventsData)
+
     }
 }
 
