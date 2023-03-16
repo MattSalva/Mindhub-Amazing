@@ -1,12 +1,33 @@
+/* Trae la data desde la API "https://mindhub-xj03.onrender.com/api/amazing"
+* */
+async function fetchData() {
+    try {
+        const response = await fetch('https://mindhub-xj03.onrender.com/api/amazing');
+        return await response.json()
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+/* Función main para indicar que la ejecución del código ocurra luego de que las promises para
+*  la data esencial se completen
+* */
+async function main() {
+    const rawEventsData = await fetchData()
+    addCards(dataElement, rawEventsData.events)
+    listCategories(catElement, rawEventsData.events)
+    if (location.search) {
+        filterEvents(rawEventsData.events)
+    }
+}
+
 const catElement = document.getElementById('search-filter')
 const dataElement = document.getElementById('eventos')
-const rawEventsData = data.events
-
 
 /*Agrega eventos en forma de card
 * dataNode: Nodo padre de los eventos
 * data: Array de eventos*/
-function addCards(dataNode, data){
+function addCards(dataNode, data) {
     let containerCart;
     dataNode.replaceChildren()
     for (let i = 0; i < data.length; i++) {
@@ -35,30 +56,32 @@ function addCards(dataNode, data){
         dataNode.appendChild(containerCart)
     }
 }
+
 /*
 * Listar categorias dinamicamente a partir de los eventos disponibles
 * catNode: Nodo parent de las categorias
 * data: Data de los eventos
 * */
-function listCategories(catNode, data){
+function listCategories(catNode, data) {
     let containerCats;
     let categories = data.map(x => x.category)
     categories = [...new Set(categories)]
     const formNode = document.getElementById("search-box")
-    for (let i = 0; i < categories.length; i++){
-        let category = categories[i].replace(" ","-").toLowerCase()
+    for (let i = 0; i < categories.length; i++) {
+        let category = categories[i].replace(" ", "-").toLowerCase()
         containerCats = document.createElement('div')
         containerCats.setAttribute('class', 'checkbox')
         containerCats.innerHTML = `
-                    <input type="checkbox" name="category" id="${category}" value="${category}" onclick="filterByCats()">
+                    <input type="checkbox" name="category" id="${category}" value="${category}">
                     <label for="${category}">${categories[i]}</label>`
 
+        containerCats.addEventListener('click', () => filterByCats(data))
         catNode.insertBefore(containerCats, formNode)
     }
 }
 
 /*Provee un texto en caso de que la busqueda no de resultados*/
-function noResults(){
+function noResults() {
     const emptyEventsNode = document.getElementById('eventos')
     let msgContainer = document.createElement('div')
     msgContainer.setAttribute('class', 'text-center m-5 p-5')
@@ -68,16 +91,18 @@ function noResults(){
 
 /*Filtra en el momento
 * escucha al click y acciona el filtro por categorias*/
-
-function filterByCats(){
+function filterByCats(d) {
     let checkboxes = catElement.querySelectorAll("input[type=checkbox]")
-    let filteredData = rawEventsData
-    let selectedCategories = [...checkboxes].reduce((acc, categoryCheckbox) => {if(categoryCheckbox.checked) acc.push(categoryCheckbox.id); return acc}, [])
-    if (selectedCategories){
+    let filteredData = d
+    let selectedCategories = [...checkboxes].reduce((acc, categoryCheckbox) => {
+        if (categoryCheckbox.checked) acc.push(categoryCheckbox.id);
+        return acc
+    }, [])
+    if (selectedCategories) {
         filteredData = filteredData.filter(e => (selectedCategories.includes(normalizeCategory(e.category))))
     }
-    if (selectedCategories.length === 0){
-        filteredData = rawEventsData
+    if (selectedCategories.length === 0) {
+        filteredData = d
     }
     addCards(dataElement, filteredData)
 
@@ -85,71 +110,57 @@ function filterByCats(){
 
 /*Normaliza texto
 * text: string texto */
-
-function normalizeText(text){
+function normalizeText(text) {
     return text.trim().toLowerCase()
 }
+
 /*Normaliza categoria pasando a minuscula y reemplazando espacios por "-"
 * category: string categoria a normalizar*/
-function normalizeCategory(category){
-    return category.replace(" ","-").toLowerCase()
+function normalizeCategory(category) {
+    return category.replace(" ", "-").toLowerCase() // Book Exchange => book-exchange
 }
 
 /*Filtrar eventos a partir de input de busqueda por casillas y por texto
 * rawEventsData = array de eventos sin filtrar
 * */
-function filterEvents(rawEventsData){
+// TODO Platform enhancement: e.preventDefault() + borrado location.search para no refrescar la página
+function filterEvents(rawEventsData) {
     const querystring = location.search
     const params = new URLSearchParams(querystring);
-    let q = params.get('q')
-    q = normalizeText(q)
-    let catQuery = params.getAll('category')
+    let q = params.get('q') // ?q=algo
+    q = normalizeText(q) // normalizeText(algo)
+    let catQuery = params.getAll('category') // category=cat1&category=cat2 [book-exchange, cinema, ...]
     let filteredEventsData = []
-    if (catQuery.length && q.length){
+    if (catQuery.length && q.length) { //category=cat1&category=cat2&q=algo
         filteredEventsData = rawEventsData.filter(e => (
-            (catQuery.includes(normalizeCategory(e.category)))
+            (catQuery.includes(normalizeCategory(e.category))) // [book-exchange, cinema, ...].includes(e.category) => TRUE
             &&
-            (normalizeText(e.name).includes(q) || normalizeText(e.description).includes(q))
+            (normalizeText(e.name).includes(q) || normalizeText(e.description).includes(q)) // "comicon".includes("com") OR "...Come...".includes("com")
         ))
         if (filteredEventsData.length === 0) {
             addCards(dataElement, filteredEventsData)
             noResults()
-        }
-        else
+        } else
             addCards(dataElement, filteredEventsData)
-    }
-    else if (catQuery.length && !q.length){
+    } else if (catQuery.length && !q.length) {
         filteredEventsData = rawEventsData.filter(e => (
             catQuery.includes(normalizeCategory(e.category))))
 
         if (filteredEventsData.length === 0) {
             addCards(dataElement, filteredEventsData)
             noResults()
-        }
-        else
+        } else
             addCards(dataElement, filteredEventsData)
-    }
-    else if (!catQuery.length && q.length){
+    } else if (!catQuery.length && q.length) {
         filteredEventsData = rawEventsData.filter(e => (
             normalizeText(e.name).includes(q) || normalizeText(e.description).includes(q)))
-
 
         if (filteredEventsData.length === 0) {
             addCards(dataElement, filteredEventsData)
             noResults()
-        }
-         else
+        } else
             addCards(dataElement, filteredEventsData)
-
     }
 }
 
-
-addCards(dataElement, rawEventsData)
-listCategories(catElement, rawEventsData)
-
-
-
-if (location.search){
-    filterEvents(rawEventsData)
-}
+main()

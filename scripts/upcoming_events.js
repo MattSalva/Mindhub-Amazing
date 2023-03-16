@@ -1,10 +1,35 @@
+/* Trae la data desde la API "https://mindhub-xj03.onrender.com/api/amazing"
+* */
+async function fetchData() {
+    try {
+        const response = await fetch('https://mindhub-xj03.onrender.com/api/amazing')
+        return await response.json()
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+/* Función main para indicar que la ejecución del código ocurra luego de que las promises para
+*  la data esencial se completen
+* */
+async function main() {
+    const rawEventsData = await fetchData()
+    let current = new Date(rawEventsData.currentDate)
+    let futureDates = rawEventsData.events.filter(e => (new Date(e.date) > current))
+    addCards(dataElement, futureDates)
+    listCategories(catElement, futureDates)
+    if (location.search) {
+        filterEvents(futureDates)
+    }
+}
+
 const catElement = document.getElementById('search-filter')
 const dataElement = document.getElementById('eventos')
-let current = new Date(data.currentDate)
-let futureDates
-data.events.forEach((el) => {
-    futureDates = data.events.filter(e => (new Date(e.date) > current))
-})
+// let current = new Date(data.currentDate)
+// let futureDates
+// data.events.forEach((el) => {
+//     futureDates = data.events.filter(e => (new Date(e.date) > current))
+// })
 
 
 /*Agrega eventos en forma de card
@@ -54,9 +79,10 @@ function listCategories(catNode, data){
         let category = categories[i].replace(" ","-").toLowerCase()
         containerCats = document.createElement('div')
         containerCats.innerHTML = `
-                    <input type="checkbox" name="category" id="${category}" value="${category}" onclick="filterByCats()">
+                    <input type="checkbox" name="category" id="${category}" value="${category}">
                     <label for="${category}">${categories[i]}</label>`
 
+        containerCats.addEventListener('click', () => filterByCats(data))
         catNode.insertBefore(containerCats, formNode)
     }
 }
@@ -75,16 +101,17 @@ function noResults(){
 /*Filtra en el momento
 * escucha al click y acciona el filtro por categorias*/
 
-
-function filterByCats(){
+/*Filtra en el momento
+* escucha al click y acciona el filtro por categorias*/
+function filterByCats(data){
     let checkboxes = catElement.querySelectorAll("input[type=checkbox]")
-    let filteredData = futureDates
+    let filteredData = data
     let selectedCategories = [...checkboxes].reduce((acc, categoryCheckbox) => {if(categoryCheckbox.checked) acc.push(categoryCheckbox.id); return acc}, [])
     if (selectedCategories){
         filteredData = filteredData.filter(e => (selectedCategories.includes(normalizeCategory(e.category))))
     }
     if (selectedCategories.length === 0){
-        filteredData = futureDates
+        filteredData = data
     }
     addCards(dataElement, filteredData)
 
@@ -95,10 +122,10 @@ function normalizeText(text){
 }
 /*Normaliza categoria pasando a minuscula y reemplazando espacios por "-"
 * category: string categoria a normalizar*/
+
 function normalizeCategory(category){
     return category.replace(" ","-").toLowerCase()
 }
-
 /*Filtrar eventos a partir de input de busqueda por casillas y por texto
 * rawEventsData = array de eventos sin filtrar
 * */
@@ -148,41 +175,4 @@ function filterEvents(rawEventsData){
     }
 }
 
-
-addCards(dataElement, futureDates)
-listCategories(catElement, futureDates)
-
-
-
-if (location.search){
-    filterEvents(futureDates)
-}
-
-
-
-//
-// for (let i = 0; i < futureDates.length; i++){
-//     let containerCart = document.createElement('div');
-//     containerCart.setAttribute("class", "col-lg-4 d-flex align-items-stretch")
-//     containerCart.innerHTML = `
-//                 <div class="card">
-//                     <img src=${futureDates[i].image} class="card-img-top" alt="">
-//                     <div class="card-body">
-//                         <h5 class="card-title ">${futureDates[i].name}</h5>
-//                         <p class="card-text text-black mb-0">${futureDates[i].date}</p>
-//                         <p class="card-text text-success mb-0">${futureDates[i].category}</p>
-//                         <p class="card-text ">${futureDates[i].description}</p>
-//                         <div class="row">
-//                             <div class="col">
-//                                 <span class="fs-5">Price $${futureDates[i].price}</span>
-//                             </div>
-//                             <div class="col">
-//                                 <a href="details.html" class="btn btn-secondary">Ver mas...</a>
-//                             </div>
-//                         </div>
-//
-//                     </div>
-//                 </div>
-//             `
-//     dataElement.appendChild(containerCart)
-// }
+main()

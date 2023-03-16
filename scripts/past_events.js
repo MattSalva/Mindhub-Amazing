@@ -1,10 +1,30 @@
+/* Trae la data desde la API "https://mindhub-xj03.onrender.com/api/amazing"
+* */
+async function fetchData() {
+    try {
+        const response = await fetch('https://mindhub-xj03.onrender.com/api/amazing')
+        return await response.json()
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+
+/* Función main para indicar que la ejecución del código ocurra luego de que las promises para
+*  la data esencial se completen
+* */
+async function main() {
+    const rawEventsData = await fetchData()
+    let current = new Date(rawEventsData.currentDate)
+    let pastDates = rawEventsData.events.filter(e => (new Date(e.date) < current))
+    addCards(dataElement, pastDates)
+    listCategories(catElement, pastDates)
+    if (location.search) {
+        filterEvents(pastDates)
+    }
+}
 const catElement = document.getElementById('search-filter')
 const dataElement = document.getElementById('eventos')
-let current = new Date(data.currentDate)
-let pastDates
-data.events.forEach((el) => {
-    pastDates = data.events.filter(e => (new Date(e.date) < current))
-})
 
 
 /*Agrega eventos en forma de card
@@ -54,14 +74,13 @@ function listCategories(catNode, data){
         let category = categories[i].replace(" ","-").toLowerCase()
         containerCats = document.createElement('div')
         containerCats.innerHTML = `
-                    <input type="checkbox" name="category" id="${category}" value="${category}" onclick="filterByCats()">
+                    <input type="checkbox" name="category" id="${category}" value="${category}">
                     <label for="${category}">${categories[i]}</label>`
 
+        containerCats.addEventListener('click', () => filterByCats(data))
         catNode.insertBefore(containerCats, formNode)
     }
 }
-/*Normaliza texto
-* text: string texto */
 
 /*Provee un texto en caso de que la busqueda no de resultados*/
 function noResults(){
@@ -75,29 +94,32 @@ function noResults(){
 /*Filtra en el momento
 * escucha al click y acciona el filtro por categorias*/
 
-function filterByCats(){
+function filterByCats(data){
     let checkboxes = catElement.querySelectorAll("input[type=checkbox]")
-    let filteredData = pastDates
+    let filteredData = data
     let selectedCategories = [...checkboxes].reduce((acc, categoryCheckbox) => {if(categoryCheckbox.checked) acc.push(categoryCheckbox.id); return acc}, [])
     if (selectedCategories){
         filteredData = filteredData.filter(e => (selectedCategories.includes(normalizeCategory(e.category))))
     }
     if (selectedCategories.length === 0){
-        filteredData = pastDates
+        filteredData = data
     }
     addCards(dataElement, filteredData)
 
 }
+
+/*Normaliza texto
+* text: string texto */
 
 function normalizeText(text){
     return text.trim().toLowerCase()
 }
 /*Normaliza categoria pasando a minuscula y reemplazando espacios por "-"
 * category: string categoria a normalizar*/
+
 function normalizeCategory(category){
     return category.replace(" ","-").toLowerCase()
 }
-
 /*Filtrar eventos a partir de input de busqueda por casillas y por texto
 * rawEventsData = array de eventos sin filtrar
 * */
@@ -147,11 +169,4 @@ function filterEvents(rawEventsData){
     }
 }
 
-addCards(dataElement, pastDates)
-listCategories(catElement, pastDates)
-
-
-
-if (location.search){
-    filterEvents(pastDates)
-}
+main()
