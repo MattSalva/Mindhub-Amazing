@@ -18,9 +18,32 @@ async function main() {
     let futureDates = rawEventsData.events.filter(e => (new Date(e.date) > current))
     addCards(dataElement, futureDates)
     listCategories(catElement, futureDates)
-    if (location.search) {
-        filterEvents(futureDates)
-    }
+    const formSearch = document.querySelector('form')
+    formSearch.addEventListener('submit', function (e){
+        e.preventDefault()
+        const url = new URL(window.location);
+        url.searchParams.delete("category")
+        let checkboxes = document.getElementById('search-filter').querySelectorAll("input[type=checkbox]")
+        let selectedCategories = [...checkboxes].reduce((acc, categoryCheckbox) => {
+            if (categoryCheckbox.checked) acc.push(categoryCheckbox.id);
+            return acc
+        }, [])
+
+        let searchBox = document.querySelector('.form-control').value
+
+        if (selectedCategories){
+            selectedCategories.forEach(e => {
+                url.searchParams.append("category", e)
+            })
+        }
+        url.searchParams.set("q", searchBox)
+        window.history.pushState({}, '', url)
+        if (location.search) {
+            filterEvents(futureDates)
+        }
+
+    })
+
 }
 
 const catElement = document.getElementById('search-filter')
@@ -172,6 +195,9 @@ function filterEvents(rawEventsData){
         else
             addCards(dataElement, filteredEventsData)
 
+    }
+    else {
+        addCards(dataElement, rawEventsData)
     }
 }
 

@@ -16,9 +16,32 @@ async function main() {
     const rawEventsData = await fetchData()
     addCards(dataElement, rawEventsData.events)
     listCategories(catElement, rawEventsData.events)
-    if (location.search) {
-        filterEvents(rawEventsData.events)
-    }
+    // Agregado de listener para poder modificar el comportamiento de la busqueda y evitar que refresque la pagina en submit
+    const formSearch = document.querySelector('form')
+    formSearch.addEventListener('submit', function (e){
+        e.preventDefault()
+        const url = new URL(window.location);
+        url.searchParams.delete("category")
+        let checkboxes = document.getElementById('search-filter').querySelectorAll("input[type=checkbox]")
+        let selectedCategories = [...checkboxes].reduce((acc, categoryCheckbox) => {
+            if (categoryCheckbox.checked) acc.push(categoryCheckbox.id);
+            return acc
+        }, [])
+
+        let searchBox = document.querySelector('.form-control').value
+
+        if (selectedCategories){
+            selectedCategories.forEach(e => {
+                url.searchParams.append("category", e)
+            })
+        }
+        url.searchParams.set("q", searchBox)
+        window.history.pushState({}, '', url)
+        if (location.search) {
+            filterEvents(rawEventsData.events)
+        }
+    })
+
 }
 
 const catElement = document.getElementById('search-filter')
@@ -123,7 +146,6 @@ function normalizeCategory(category) {
 /*Filtrar eventos a partir de input de busqueda por casillas y por texto
 * rawEventsData = array de eventos sin filtrar
 * */
-// TODO Platform enhancement: e.preventDefault() + borrado location.search para no refrescar la página
 function filterEvents(rawEventsData) {
     const querystring = location.search
     const params = new URLSearchParams(querystring);
@@ -161,6 +183,11 @@ function filterEvents(rawEventsData) {
         } else
             addCards(dataElement, filteredEventsData)
     }
+    else {
+        addCards(dataElement, rawEventsData)
+    }
 }
+
+
 
 main()

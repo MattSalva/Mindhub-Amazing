@@ -18,23 +18,26 @@ async function main() {
     const pastEvents = events.filter(e => (new Date(e.date) < currentDate))
     const futureEvents = events.filter(e => (new Date(e.date) > currentDate))
 
-    let eventsPercentages = events.map((e) => ({
+    let eventsPercentages = pastEvents.map((e) => ({
         id: e._id,
         name: e.name,
         capacity: e.capacity,
         percentage: percentage((e.hasOwnProperty('assistance') ? e.assistance : e.estimate), e.capacity)
     }))
 
+    // Events statistics
     statistics(eventsPercentages)
-    statisticsByCategory(pastEventsStatistics, pastEvents)
+    // Upcoming events statistics by category
     statisticsByCategory(futureEventsStatistics, futureEvents)
-
+    // Past Events statistics by category
+    statisticsByCategory(pastEventsStatistics, pastEvents)
 
 }
 
 const pastEventsStatistics = document.getElementById('past-events')
 const futureEventsStatistics = document.getElementById('future-events')
 
+// Mostrar Estadisticas
 function statistics(eventsPercentages) {
     const objetoMasPorcentaje = getObjectWithLargestAttributeValue(eventsPercentages, "percentage")
     const objetoMasCapacidad = getObjectWithLargestAttributeValue(eventsPercentages, "capacity")
@@ -48,6 +51,7 @@ function statistics(eventsPercentages) {
     `
     tableNode.appendChild(rowTable)
 }
+// Mostrar estadisticas por categoria
 function statisticsByCategory(tableNode, events) {
     let categories = events.map(x => x.category)
     categories = [...new Set(categories)]
@@ -75,30 +79,33 @@ function statisticsByCategory(tableNode, events) {
     }
 
 }
+// Calculo de porcentaje
 function percentage(assist, capacity) {
-    return parseFloat(((assist * 100) / capacity).toFixed(1))
+    return parseFloat(((assist * 100) / capacity).toFixed(2))
 }
+
+// Funciones para obtener objeto de una lista de objetos con el mayor/menor valor en el atributo indicado
 function getObjectWithLargestAttributeValue(objectsArray, attribute) {
-    let largestValueObject = objectsArray[0];
+    let largestValueObject = objectsArray[0]
 
     objectsArray.forEach(function (currentObject) {
         if (currentObject[attribute] > largestValueObject[attribute]) {
-            largestValueObject = currentObject;
+            largestValueObject = currentObject
         }
-    });
+    })
 
-    return largestValueObject;
+    return largestValueObject
 }
 function getObjectWithLowestAttributeValue(objectsArray, attribute) {
-    let lowestValueObject = objectsArray[0];
+    let lowestValueObject = objectsArray[0]
 
     objectsArray.forEach(function (currentObject) {
         if (currentObject[attribute] < lowestValueObject[attribute]) {
-            lowestValueObject = currentObject;
+            lowestValueObject = currentObject
         }
-    });
+    })
 
-    return lowestValueObject;
+    return lowestValueObject
 }
 
 main()
