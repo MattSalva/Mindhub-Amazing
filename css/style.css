@@ -40,7 +40,7 @@ footer {
     .card {
         margin-top: 3rem;
         margin-bottom: 3rem;
-        max-width: 25rem;
+        width: 25rem;
     }
     .row {
         margin-left: 0rem!important;
